@@ -6,238 +6,73 @@
 <title>DXF 실측 선정리</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
-
-:root {
-  --bg: #0f1114;
-  --surface: #1a1d23;
-  --surface2: #22262e;
-  --border: #2e333d;
-  --text: #e4e7ed;
-  --text-dim: #7a8194;
-  --accent: #f59e0b;
-  --accent-dim: rgba(245, 158, 11, 0.15);
-  --success: #22c55e;
-  --success-dim: rgba(34, 197, 94, 0.15);
-  --danger: #ef4444;
-  --danger-dim: rgba(239, 68, 68, 0.15);
-  --blue: #3b82f6;
-  --blue-dim: rgba(59, 130, 246, 0.15);
-  --mono: 'JetBrains Mono', monospace;
-  --sans: 'Noto Sans KR', -apple-system, sans-serif;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-.header {
-  padding: 24px 32px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.header-icon {
-  width: 40px; height: 40px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; font-weight: 700;
-  color: var(--bg);
-  font-family: var(--mono);
-}
-.header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-.header p { font-size: 12px; color: var(--text-dim); margin-top: 2px; font-family: var(--mono); }
-
-.app {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  min-height: calc(100vh - 89px);
-}
-@media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; }
-  .preview-panel { min-height: 50vh; }
-}
-
-.sidebar {
-  border-right: 1px solid var(--border);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  overflow-y: auto;
-}
-
-.dropzone {
-  border: 2px dashed var(--border);
-  border-radius: 12px;
-  padding: 36px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.dropzone:hover, .dropzone.dragover {
-  border-color: var(--accent);
-  background: var(--accent-dim);
-}
-.dropzone-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.6; }
-.dropzone-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.dropzone-sub { font-size: 12px; color: var(--text-dim); }
-.dropzone input { display: none; }
-.file-loaded {
-  border-color: var(--success);
-  background: var(--success-dim);
-  border-style: solid;
-}
-
-.settings-group {
-  background: var(--surface);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.settings-header {
-  padding: 12px 16px;
-  font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: var(--text-dim);
-  background: var(--surface2);
-  font-family: var(--mono);
-}
-.setting-row {
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--border);
-}
-.setting-row:first-of-type { border-top: none; }
-.setting-label { font-size: 13px; }
-.setting-label small { display: block; font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-.setting-input {
-  width: 80px; padding: 6px 10px;
-  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-  color: var(--text); font-size: 13px; font-family: var(--mono); text-align: right;
-}
-.setting-input:focus { outline: none; border-color: var(--accent); }
-.unit { font-size: 11px; color: var(--text-dim); margin-left: 4px; font-family: var(--mono); }
-
-.layer-section-full { padding: 12px 16px; }
-.layer-hint { font-size: 11px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
-.layer-list {
-  max-height: 160px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.layer-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 4px 8px; border-radius: 4px;
-  font-size: 12px; font-family: var(--mono);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.layer-item:hover { background: var(--surface2); }
-.layer-item input { accent-color: var(--accent); }
-.layer-item .count { color: var(--text-dim); margin-left: auto; font-size: 11px; }
-.layer-item.target { color: var(--accent); font-weight: 600; }
-
-.btn {
-  padding: 12px 20px; border: none; border-radius: 10px;
-  font-size: 14px; font-weight: 600; font-family: var(--sans);
-  cursor: pointer; transition: all 0.15s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--accent); color: var(--bg); }
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-primary:disabled { opacity: 0.3; cursor: not-allowed; filter: none; }
-.btn-download { background: var(--success); color: var(--bg); }
-.btn-download:hover { filter: brightness(1.1); }
-
-.log-container {
-  background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
-  overflow: hidden; flex: 1; min-height: 0;
-  display: flex; flex-direction: column;
-}
-.log-header {
-  padding: 12px 16px; font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: var(--text-dim); background: var(--surface2); font-family: var(--mono);
-}
-.log-body {
-  padding: 12px 16px; font-size: 12px; font-family: var(--mono);
-  line-height: 1.8; overflow-y: auto; flex: 1;
-  min-height: 100px; max-height: 260px;
-}
-.log-line { display: flex; gap: 8px; }
-.log-ok { color: var(--success); }
-.log-warn { color: var(--accent); }
-.log-err { color: var(--danger); }
-.log-info { color: var(--blue); }
-.log-dim { color: var(--text-dim); }
-
-.preview-panel { background: var(--surface); position: relative; overflow: hidden; }
-.preview-toolbar {
-  position: absolute; top: 16px; left: 16px; right: 16px;
-  display: flex; justify-content: space-between; align-items: center;
-  z-index: 10; pointer-events: none;
-}
-.preview-toolbar > * { pointer-events: auto; }
-.preview-tabs {
-  display: flex; background: var(--bg); border-radius: 8px;
-  border: 1px solid var(--border); overflow: hidden;
-}
-.preview-tab {
-  padding: 8px 16px; font-size: 12px; font-weight: 600;
-  color: var(--text-dim); background: transparent; border: none;
-  cursor: pointer; font-family: var(--mono); transition: all 0.15s;
-}
-.preview-tab.active { color: var(--accent); background: var(--accent-dim); }
-.preview-stats {
-  padding: 8px 12px; background: var(--bg); border-radius: 8px;
-  border: 1px solid var(--border); font-size: 11px;
-  font-family: var(--mono); color: var(--text-dim);
-}
-canvas { width: 100%; height: 100%; display: block; }
-.preview-empty {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 8px; color: var(--text-dim);
-}
-.preview-empty-icon { font-size: 48px; opacity: 0.3; }
-.preview-empty-text { font-size: 13px; }
-.zoom-controls {
-  position: absolute; bottom: 16px; right: 16px;
-  display: flex; gap: 4px; z-index: 10;
-}
-.zoom-btn {
-  width: 36px; height: 36px; background: var(--bg);
-  border: 1px solid var(--border); border-radius: 8px;
-  color: var(--text); font-size: 16px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-}
-.zoom-btn:hover { border-color: var(--accent); color: var(--accent); }
+:root{--bg:#0f1114;--surface:#1a1d23;--surface2:#22262e;--border:#2e333d;--text:#e4e7ed;--text-dim:#7a8194;--accent:#f59e0b;--accent-dim:rgba(245,158,11,.15);--success:#22c55e;--success-dim:rgba(34,197,94,.15);--danger:#ef4444;--blue:#3b82f6;--mono:'JetBrains Mono',monospace;--sans:'Noto Sans KR',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+.header{padding:24px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.header-icon{width:40px;height:40px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--bg);font-family:var(--mono)}
+.header h1{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.header p{font-size:12px;color:var(--text-dim);margin-top:2px;font-family:var(--mono)}
+.app{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 89px)}
+@media(max-width:900px){.app{grid-template-columns:1fr}.preview-panel{min-height:50vh}}
+.sidebar{border-right:1px solid var(--border);padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+.dropzone{border:2px dashed var(--border);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s}
+.dropzone:hover,.dropzone.dragover{border-color:var(--accent);background:var(--accent-dim)}
+.dropzone-icon{font-size:36px;margin-bottom:12px;opacity:.6}
+.dropzone-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.dropzone-sub{font-size:12px;color:var(--text-dim)}
+.dropzone input{display:none}
+.file-loaded{border-color:var(--success);background:var(--success-dim);border-style:solid}
+.settings-group{background:var(--surface);border-radius:10px;border:1px solid var(--border);overflow:hidden}
+.settings-header{padding:12px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);background:var(--surface2);font-family:var(--mono)}
+.setting-row{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border)}
+.setting-row:first-of-type{border-top:none}
+.setting-label{font-size:13px}
+.setting-label small{display:block;font-size:11px;color:var(--text-dim);margin-top:2px}
+.setting-input{width:80px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:var(--mono);text-align:right}
+.setting-input:focus{outline:none;border-color:var(--accent)}
+.unit{font-size:11px;color:var(--text-dim);margin-left:4px;font-family:var(--mono)}
+.layer-section-full{padding:12px 16px}
+.layer-hint{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5}
+.layer-list{max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.layer-item{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:4px;font-size:12px;font-family:var(--mono);cursor:pointer;transition:background .1s}
+.layer-item:hover{background:var(--surface2)}
+.layer-item input{accent-color:var(--accent)}
+.layer-item .count{color:var(--text-dim);margin-left:auto;font-size:11px}
+.layer-item.target{color:var(--accent);font-weight:600}
+.btn{padding:12px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:var(--bg)}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;filter:none}
+.btn-download{background:var(--success);color:var(--bg)}
+.btn-download:hover{filter:brightness(1.1)}
+.log-container{background:var(--surface);border-radius:10px;border:1px solid var(--border);overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column}
+.log-header{padding:12px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);background:var(--surface2);font-family:var(--mono)}
+.log-body{padding:12px 16px;font-size:12px;font-family:var(--mono);line-height:1.8;overflow-y:auto;flex:1;min-height:100px;max-height:260px}
+.log-line{display:flex;gap:8px}
+.log-ok{color:var(--success)}.log-warn{color:var(--accent)}.log-err{color:var(--danger)}.log-info{color:var(--blue)}.log-dim{color:var(--text-dim)}
+.preview-panel{background:var(--surface);position:relative;overflow:hidden}
+.preview-toolbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none}
+.preview-toolbar>*{pointer-events:auto}
+.preview-tabs{display:flex;background:var(--bg);border-radius:8px;border:1px solid var(--border);overflow:hidden}
+.preview-tab{padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);background:transparent;border:none;cursor:pointer;font-family:var(--mono);transition:all .15s}
+.preview-tab.active{color:var(--accent);background:var(--accent-dim)}
+.preview-stats{padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:11px;font-family:var(--mono);color:var(--text-dim)}
+canvas{width:100%;height:100%;display:block}
+.preview-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-dim)}
+.preview-empty-icon{font-size:48px;opacity:.3}
+.preview-empty-text{font-size:13px}
+.zoom-controls{position:absolute;bottom:16px;right:16px;display:flex;gap:4px;z-index:10}
+.zoom-btn{width:36px;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.zoom-btn:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-icon">⊿</div>
-  <div>
-    <h1>DXF 실측 선정리</h1>
-    <p>DISTO X6 → Auto Cleanup → Clean DXF</p>
-  </div>
+  <div><h1>DXF 실측 선정리</h1><p>DISTO X6 → Auto Cleanup → Clean DXF</p></div>
 </div>
-
 <div class="app">
   <div class="sidebar">
     <div class="dropzone" id="dropzone">
@@ -246,7 +81,6 @@ canvas { width: 100%; height: 100%; display: block; }
       <div class="dropzone-sub" id="dropzone-sub">DISTO X6 실측 데이터</div>
       <input type="file" id="fileInput" accept=".dxf">
     </div>
-
     <div class="settings-group" id="layerGroup" style="display:none">
       <div class="settings-header">📂 레이어 필터</div>
       <div class="layer-section-full">
@@ -254,34 +88,19 @@ canvas { width: 100%; height: 100%; display: block; }
         <div class="layer-hint">체크된 레이어의 엔티티만 처리됩니다</div>
       </div>
     </div>
-
     <div class="settings-group">
       <div class="settings-header">⚙ 설정</div>
-      <div class="setting-row">
-        <div class="setting-label">각도 허용 오차<small>90°로 스냅할 범위</small></div>
-        <div><input type="number" class="setting-input" id="angleTol" value="5" min="1" max="15" step="0.5"><span class="unit">°</span></div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-label">최대 끝점 이동<small>보정 시 허용 이동 거리</small></div>
-        <div><input type="number" class="setting-input" id="maxShift" value="40" min="5" max="100" step="5"><span class="unit">mm</span></div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-label">갭 허용 거리<small>끝점 자동 연결 범위</small></div>
-        <div><input type="number" class="setting-input" id="gapTol" value="5" min="1" max="20" step="1"><span class="unit">mm</span></div>
-      </div>
+      <div class="setting-row"><div class="setting-label">각도 허용 오차<small>90°로 스냅할 범위</small></div><div><input type="number" class="setting-input" id="angleTol" value="5" min="1" max="15" step="0.5"><span class="unit">°</span></div></div>
+      <div class="setting-row"><div class="setting-label">최대 끝점 이동<small>보정 시 허용 이동 거리</small></div><div><input type="number" class="setting-input" id="maxShift" value="40" min="5" max="100" step="5"><span class="unit">mm</span></div></div>
+      <div class="setting-row"><div class="setting-label">노드 병합 거리<small>같은 점으로 볼 거리</small></div><div><input type="number" class="setting-input" id="mergeTol" value="20" min="5" max="50" step="5"><span class="unit">mm</span></div></div>
     </div>
-
     <button class="btn btn-primary" id="btnRun" disabled><span>▶</span> 선정리 실행</button>
     <button class="btn btn-download" id="btnDownload" style="display:none"><span>↓</span> 정리된 DXF 다운로드</button>
-
     <div class="log-container">
       <div class="log-header">📋 로그</div>
-      <div class="log-body" id="logBody">
-        <div class="log-line log-dim">파일을 불러오면 시작합니다...</div>
-      </div>
+      <div class="log-body" id="logBody"><div class="log-line log-dim">파일을 불러오면 시작합니다...</div></div>
     </div>
   </div>
-
   <div class="preview-panel" id="previewPanel">
     <div class="preview-toolbar">
       <div class="preview-tabs">
@@ -291,10 +110,7 @@ canvas { width: 100%; height: 100%; display: block; }
       </div>
       <div class="preview-stats" id="previewStats"></div>
     </div>
-    <div class="preview-empty" id="previewEmpty">
-      <div class="preview-empty-icon">⊿</div>
-      <div class="preview-empty-text">DXF 파일을 불러와주세요</div>
-    </div>
+    <div class="preview-empty" id="previewEmpty"><div class="preview-empty-icon">⊿</div><div class="preview-empty-text">DXF 파일을 불러와주세요</div></div>
     <canvas id="canvas"></canvas>
     <div class="zoom-controls">
       <button class="zoom-btn" id="zoomIn">+</button>
@@ -305,8 +121,11 @@ canvas { width: 100%; height: 100%; display: block; }
 </div>
 
 <script>
+// ezdxf R12 DXF template (base64) — LEICA_MEASURED_LINE layer included
+const DXF_TEMPLATE_B64 = "ICAwClNFQ1RJT04KICAyCkhFQURFUgogIDkKJEFDQURWRVIKICAxCkFDMTAwOQogIDkKJERXR0NPREVQQUdFCiAgMwpBTlNJXzEyNTIKICA5CiRJTlNCQVNFCiAxMAowLjAKIDIwCjAuMAogMzAKMC4wCiAgOQokRVhUTUlOCiAxMAoxZSsyMAogMjAKMWUrMjAKIDMwCjFlKzIwCiAgOQokRVhUTUFYCiAxMAotMWUrMjAKIDIwCi0xZSsyMAogMzAKLTFlKzIwCiAgOQokTElNTUlOCiAxMAowLjAKIDIwCjAuMAogIDkKJExJTU1BWAogMTAKNDIwLjAKIDIwCjI5Ny4wCiAgOQokT1JUSE9NT0RFCiA3MAowCiAgOQokUkVHRU5NT0RFCiA3MAoxCiAgOQokRklMTE1PREUKIDcwCjEKICA5CiREUkFHTU9ERQogNzAKMgogIDkKJFFURVhUTU9ERQogNzAKMAogIDkKJE1JUlJURVhUCiA3MAoxCiAgOQokT1NNT0RFCiA3MAoyMDU4MwogIDkKJExUU0NBTEUKIDQwCjEuMAogIDkKJEFUVE1PREUKIDcwCjEKICA5CiRURVhUU0laRQogNDAKMi41CiAgOQokVFJBQ0VXSUQKIDQwCjEuMAogIDkKJFRFWFRTVFlMRQogIDcKU3RhbmRhcmQKICA5CiRDTEFZRVIKICA4CjAKICA5CiRDRUxUWVBFCiAgNgpCeUxheWVyCiAgOQokQ0VDT0xPUgogNjIKMjU2CiAgOQokRElNU0NBTEUKIDQwCjEuMAogIDkKJERJTUFTWgogNDAKMi41CiAgOQokRElNRVhPCiA0MAowLjYyNQogIDkKJERJTURMSQogNDAKMy43NQogIDkKJERJTVJORAogNDAKMC4wCiAgOQokRElNRExFCiA0MAowLjAKICA5CiRESU1FWEUKIDQwCjEuMjUKICA5CiRESU1UUAogNDAKMC4wCiAgOQokRElNVE0KIDQwCjAuMAogIDkKJERJTVRYVAogNDAKMi41CiAgOQokRElNQ0VOCiA0MAoyLjUKICA5CiRESU1UU1oKIDQwCjAuMAogIDkKJERJTVRPTAogNzAKMAogIDkKJERJTUxJTQogNzAKMAogIDkKJERJTVRJSAogNzAKMAogIDkKJERJTVRPSAogNzAKMAogIDkKJERJTVNFMQogNzAKMAogIDkKJERJTVNFMgogNzAKMAogIDkKJERJTVRBRAogNzAKMQogIDkKJERJTVpJTgogNzAKOAogIDkKJERJTUJMSwogIDEKCiAgOQokRElNQVNPCiA3MAoxCiAgOQokRElNU0hPCiA3MAoxCiAgOQokRElNUE9TVAogIDEKCiAgOQokRElNQVBPU1QKICAxCgogIDkKJERJTUFMVAogNzAKMAogIDkKJERJTUFMVEQKIDcwCjMKICA5CiRESU1BTFRGCiA0MAowLjAzOTM3MDA3ODc0CiAgOQokRElNTEZBQwogNDAKMS4wCiAgOQokRElNVE9GTAogNzAKMQogIDkKJERJTVRWUAogNDAKMC4wCiAgOQokRElNVElYCiA3MAowCiAgOQokRElNU09YRAogNzAKMAogIDkKJERJTVNBSAogNzAKMAogIDkKJERJTUJMSzEKICAxCgogIDkKJERJTUJMSzIKICAxCgogIDkKJERJTVNUWUxFCiAgMgpJU08tMjUKICA5CiRESU1DTFJECiA3MAowCiAgOQokRElNQ0xSRQogNzAKMAogIDkKJERJTUNMUlQKIDcwCjAKICA5CiRESU1URkFDCiA0MAoxLjAKICA5CiRESU1HQVAKIDQwCjAuNjI1CiAgOQokQ09PUkRTCiA3MAoxCiAgOQokQVRURElBCiA3MAowCiAgOQokQVRUUkVRCiA3MAoxCiAgOQokSEFORExJTkcKIDcwCjEKICA5CiRMVU5JVFMKIDcwCjIKICA5CiRMVVBSRUMKIDcwCjQKICA5CiRTS0VUQ0hJTkMKIDQwCjEuMAogIDkKJEZJTExFVFJBRAogNDAKMTAuMAogIDkKJEFVTklUUwogNzAKMAogIDkKJEFVUFJFQwogNzAKMgogIDkKJE1FTlUKICAxCi4KICA5CiRFTEVWQVRJT04KIDQwCjAuMAogIDkKJFBFTEVWQVRJT04KIDQwCjAuMAogIDkKJFRISUNLTkVTUwogNDAKMC4wCiAgOQokTElNQ0hFQ0sKIDcwCjAKICA5CiRDSEFNRkVSQQogNDAKMC4wCiAgOQokQ0hBTUZFUkIKIDQwCjAuMAogIDkKJFNLUE9MWQogNzAKMAogIDkKJFREQ1JFQVRFCiA0MAoyNDYxMTEyLjQwNTIzMTQ4MTQKICA5CiRURFVQREFURQogNDAKMjQ2MTExMi40MDUyMzE0ODE0CiAgOQokVERJTkRXRwogNDAKMC4wCiAgOQokVERVU1JUSU1FUgogNDAKMC4wCiAgOQokVVNSVElNRVIKIDcwCjEKICA5CiRBTkdCQVNFCiA1MAowLjAKICA5CiRBTkdESVIKIDcwCjAKICA5CiRQRE1PREUKIDcwCjAKICA5CiRQRFNJWkUKIDQwCjAuMAogIDkKJFBMSU5FV0lECiA0MAowLjAKICA5CiRTUExGUkFNRQogNzAKMAogIDkKJFNQTElORVRZUEUKIDcwCjYKICA5CiRTUExJTkVTRUdTCiA3MAo4CiAgOQokSEFORFNFRUQKICA1CjMwCiAgOQokU1VSRlRBQjEKIDcwCjYKICA5CiRTVVJGVEFCMgogNzAKNgogIDkKJFNVUkZUWVBFCiA3MAo2CiAgOQokU1VSRlUKIDcwCjYKICA5CiRTVVJGVgogNzAKNgogIDkKJFVDU05BTUUKICAyCgogIDkKJFVDU09SRwogMTAKMC4wCiAyMAowLjAKIDMwCjAuMAogIDkKJFVDU1hESVIKIDEwCjEuMAogMjAKMC4wCiAzMAowLjAKICA5CiRVQ1NZRElSCiAxMAowLjAKIDIwCjEuMAogMzAKMC4wCiAgOQokUFVDU05BTUUKICAyCgogIDkKJFBVQ1NPUkcKIDEwCjAuMAogMjAKMC4wCiAzMAowLjAKICA5CiRQVUNTWERJUgogMTAKMS4wCiAyMAowLjAKIDMwCjAuMAogIDkKJFBVQ1NZRElSCiAxMAowLjAKIDIwCjEuMAogMzAKMC4wCiAgOQokVVNFUkkxCiA3MAowCiAgOQokVVNFUkkyCiA3MAowCiAgOQokVVNFUkkzCiA3MAowCiAgOQokVVNFUkk0CiA3MAowCiAgOQokVVNFUkk1CiA3MAowCiAgOQokVVNFUlIxCiA0MAowLjAKICA5CiRVU0VSUjIKIDQwCjAuMAogIDkKJFVTRVJSMwogNDAKMC4wCiAgOQokVVNFUlI0CiA0MAowLjAKICA5CiRVU0VSUjUKIDQwCjAuMAogIDkKJFdPUkxEVklFVwogNzAKMQogIDkKJFNIQURFREdFCiA3MAozCiAgOQokU0hBREVESUYKIDcwCjcwCiAgOQokVElMRU1PREUKIDcwCjEKICA5CiRNQVhBQ1RWUAogNzAKNjQKICA5CiRQTElNQ0hFQ0sKIDcwCjAKICA5CiRQRVhUTUlOCiAxMAoxZSsyMAogMjAKMWUrMjAKIDMwCjFlKzIwCiAgOQokUEVYVE1BWAogMTAKLTFlKzIwCiAyMAotMWUrMjAKIDMwCi0xZSsyMAogIDkKJFBMSU1NSU4KIDEwCjAuMAogMjAKMC4wCiAgOQokUExJTU1BWAogMTAKNDIwLjAKIDIwCjI5Ny4wCiAgOQokVU5JVE1PREUKIDcwCjAKICA5CiRWSVNSRVRBSU4KIDcwCjEKICA5CiRQTElORUdFTgogNzAKMAogIDkKJFBTTFRTQ0FMRQogNzAKMQogIDAKRU5EU0VDCiAgMApTRUNUSU9OCiAgMgpUQUJMRVMKICAwClRBQkxFCiAgMgpWUE9SVAogNzAKMQogIDAKVlBPUlQKICA1CjIzCiAgMgoqQWN0aXZlCiA3MAowCiAxMAowLjAKIDIwCjAuMAogMTEKMS4wCiAyMQoxLjAKIDEyCjAuMAogMjIKMC4wCiAxMwowLjAKIDIzCjAuMAogMTQKMC41CiAyNAowLjUKIDE1CjAuNQogMjUKMC41CiAxNgowLjAKIDI2CjAuMAogMzYKMS4wCiAxNwowLjAKIDI3CjAuMAogMzcKMC4wCiA0MAoxMDAwLjAKIDQxCjEuMzQKIDQyCjUwLjAKIDQzCjAuMAogNDQKMC4wCiA1MAowLjAKIDUxCjAuMAogNzEKMAogNzIKMTAwMAogNzMKMQogNzQKMwogNzUKMAogNzYKMAogNzcKMAogNzgKMAogIDAKRU5EVEFCCiAgMApUQUJMRQogIDIKTFRZUEUKIDcwCjMKICAwCkxUWVBFCiAgNQoyNAogIDIKQnlCbG9jawogNzAKMAogIDMKCiA3Mgo2NQogNzMKMAogNDAKMC4wCiAgMApMVFlQRQogIDUKMjUKICAyCkJ5TGF5ZXIKIDcwCjAKICAzCgogNzIKNjUKIDczCjAKIDQwCjAuMAogIDAKTFRZUEUKICA1CjI2CiAgMgpDb250aW51b3VzCiA3MAowCiAgMwoKIDcyCjY1CiA3MwowCiA0MAowLjAKICAwCkVORFRBQgogIDAKVEFCTEUKICAyCkxBWUVSCiA3MAozCiAgMApMQVlFUgogIDUKMjcKICAyCjAKIDcwCjAKIDYyCjcKICA2CkNvbnRpbnVvdXMKICAwCkxBWUVSCiAgNQoyOAogIDIKRGVmcG9pbnRzCiA3MAowCiA2Mgo3CiAgNgpDb250aW51b3VzCiAgMApMQVlFUgogIDUKMkQKICAyCkxFSUNBX01FQVNVUkVEX0xJTkUKIDcwCjAKIDYyCjcKICA2CkNvbnRpbnVvdXMKICAwCkVORFRBQgogIDAKVEFCTEUKICAyClNUWUxFCiA3MAoxCiAgMApTVFlMRQogIDUKMjkKICAyClN0YW5kYXJkCiA3MAowCiA0MAowLjAKIDQxCjEuMAogNTAKMC4wCiA3MQowCiA0MgoyLjUKICAzCnR4dAogIDQKCiAgMApFTkRUQUIKICAwClRBQkxFCiAgMgpWSUVXCiA3MAowCiAgMApFTkRUQUIKICAwClRBQkxFCiAgMgpVQ1MKIDcwCjAKICAwCkVORFRBQgogIDAKVEFCTEUKICAyCkFQUElECiA3MAozCiAgMApBUFBJRAogIDUKMkEKICAyCkFDQUQKIDcwCjAKICAwCkFQUElECiAgNQoyRQogIDIKSEFUQ0hCQUNLR1JPVU5EQ09MT1IKIDcwCjAKICAwCkFQUElECiAgNQoyRgogIDIKRVpEWEYKIDcwCjAKICAwCkVORFRBQgogIDAKVEFCTEUKICAyCkRJTVNUWUxFCiA3MAoxCiAgMApESU1TVFlMRQoxMDUKMkIKICAyClN0YW5kYXJkCiA3MAowCiAgMwoKICA0CgogIDUKCiAgNgoKICA3CgogNDAKMS4wCiA0MQoyLjUKIDQyCjAuNjI1CiA0MwozLjc1CiA0NAoxLjI1CiA0NQowLjAKIDQ2CjAuMAogNDcKMC4wCiA0OAowLjAKMTQwCjIuNQoxNDEKMi41CjE0MgowLjAKMTQzCjAuMDM5MzcwMDc4NzQKMTQ0CjEuMAoxNDUKMC4wCjE0NgoxLjAKMTQ3CjAuNjI1CiA3MQowCiA3MgowCiA3MwowCiA3NAowCiA3NQowCiA3NgowCiA3NwoxCiA3OAo4CjE3MAowCjE3MQozCjE3MgoxCjE3MwowCjE3NAowCjE3NQowCjE3NgowCjE3NwowCjE3OAowCiAgMApFTkRUQUIKICAwCkVORFNFQwogIDAKU0VDVElPTgogIDIKQkxPQ0tTCiAgMApCTE9DSwogIDUKMTgKICA4CjAKICAyCiRNb2RlbF9TcGFjZQogNzAKMAogMTAKMC4wCiAyMAowLjAKIDMwCjAuMAogIDMKJE1vZGVsX1NwYWNlCiAgMQoKMTAwMQpFWkRYRgoxMDAwCkNSRUFURURfQllfRVpEWEYKMTAwMAoxLjQuMyBAIDIwMjYtMDMtMTJUMDk6NDM6MzIuNzg5ODg4KzAwOjAwCjEwMDAKV1JJVFRFTl9CWV9FWkRYRgoxMDAwCjEuNC4zIEAgMjAyNi0wMy0xMlQwOTo0MzozMi43OTE4NDgrMDA6MDAKICAwCkVOREJMSwogIDUKMTkKICA4CjAKICAwCkJMT0NLCiAgNQoxQwogIDgKMAogIDIKJFBhcGVyX1NwYWNlCiA3MAowCiAxMAowLjAKIDIwCjAuMAogMzAKMC4wCiAgMwokUGFwZXJfU3BhY2UKICAxCgogIDAKRU5EQkxLCiAgNQoxRAogIDgKMAogIDAKRU5EU0VDCg==";
+
 // ============================================================
-// DXF Parser — LINE, LWPOLYLINE, POLYLINE+VERTEX, ARC
+// DXF Parser
 // ============================================================
 class DxfParser {
   static parse(text) {
@@ -314,235 +133,173 @@ class DxfParser {
     const pairs = [];
     for (let i = 0; i < lines.length - 1; i += 2) {
       const code = parseInt(lines[i].trim(), 10);
-      const value = lines[i + 1] !== undefined ? lines[i + 1].trim() : '';
+      const value = lines[i+1] !== undefined ? lines[i+1].trim() : '';
       if (!isNaN(code)) pairs.push({ code, value });
     }
-
-    const entities = [];
-    const layerStats = {};
-
-    // Find ENTITIES section
+    const entities = [], layerStats = {};
     let entStart = -1, entEnd = pairs.length;
     for (let i = 0; i < pairs.length; i++) {
-      if (pairs[i].code === 2 && pairs[i].value === 'ENTITIES') { entStart = i + 1; }
+      if (pairs[i].code === 2 && pairs[i].value === 'ENTITIES') entStart = i + 1;
       if (entStart > 0 && i > entStart && pairs[i].code === 0 && pairs[i].value === 'ENDSEC') { entEnd = i; break; }
     }
     if (entStart < 0) return { entities, layerStats, rawText: text };
-
-    // Split into entity blocks
     const blocks = [];
     let bs = -1, bt = '';
     for (let i = entStart; i < entEnd; i++) {
-      if (pairs[i].code === 0) {
-        if (bs >= 0) blocks.push({ type: bt, start: bs, end: i });
-        bt = pairs[i].value; bs = i;
-      }
+      if (pairs[i].code === 0) { if (bs >= 0) blocks.push({ type: bt, start: bs, end: i }); bt = pairs[i].value; bs = i; }
     }
     if (bs >= 0) blocks.push({ type: bt, start: bs, end: entEnd });
-
     let pverts = null, player = '0', pclosed = false;
-
     for (const block of blocks) {
       const sub = pairs.slice(block.start, block.end);
-
       if (block.type === 'LINE') {
         const e = { type:'LINE', layer:'0', start:{x:0,y:0}, end:{x:0,y:0} };
-        for (const p of sub) {
-          if (p.code===8) e.layer=p.value;
-          if (p.code===10) e.start.x=parseFloat(p.value);
-          if (p.code===20) e.start.y=parseFloat(p.value);
-          if (p.code===11) e.end.x=parseFloat(p.value);
-          if (p.code===21) e.end.y=parseFloat(p.value);
-        }
-        entities.push(e);
-        this._stat(layerStats, e.layer, 'LINE');
-
+        for (const p of sub) { if(p.code===8)e.layer=p.value; if(p.code===10)e.start.x=parseFloat(p.value); if(p.code===20)e.start.y=parseFloat(p.value); if(p.code===11)e.end.x=parseFloat(p.value); if(p.code===21)e.end.y=parseFloat(p.value); }
+        entities.push(e); this._s(layerStats,e.layer,'LINE');
       } else if (block.type === 'LWPOLYLINE') {
-        const e = { type:'LWPOLYLINE', layer:'0', vertices:[], closed:false };
-        let cv = null;
-        for (const p of sub) {
-          if (p.code===8) e.layer=p.value;
-          if (p.code===70) e.closed=(parseInt(p.value)&1)===1;
-          if (p.code===10) { if (cv) e.vertices.push(cv); cv={x:parseFloat(p.value),y:0}; }
-          if (p.code===20 && cv) cv.y=parseFloat(p.value);
-        }
-        if (cv) e.vertices.push(cv);
-        if (e.vertices.length>=2) { entities.push(e); this._stat(layerStats,e.layer,'LWPOLYLINE'); }
-
-      } else if (block.type === 'POLYLINE') {
-        pverts=[]; player='0'; pclosed=false;
-        for (const p of sub) {
-          if (p.code===8) player=p.value;
-          if (p.code===70) pclosed=(parseInt(p.value)&1)===1;
-        }
-      } else if (block.type === 'VERTEX') {
-        if (pverts!==null) {
-          let vx=0,vy=0;
-          for (const p of sub) { if (p.code===10) vx=parseFloat(p.value); if (p.code===20) vy=parseFloat(p.value); }
-          pverts.push({x:vx,y:vy});
-        }
-      } else if (block.type === 'SEQEND') {
-        if (pverts && pverts.length>=2) {
-          entities.push({ type:'LWPOLYLINE', layer:player, vertices:pverts, closed:pclosed });
-          this._stat(layerStats, player, 'POLYLINE');
-        }
-        pverts=null;
-
-      } else if (block.type === 'ARC') {
-        const a = { layer:'0', cx:0, cy:0, r:0, sa:0, ea:360 };
-        for (const p of sub) {
-          if (p.code===8) a.layer=p.value;
-          if (p.code===10) a.cx=parseFloat(p.value);
-          if (p.code===20) a.cy=parseFloat(p.value);
-          if (p.code===40) a.r=parseFloat(p.value);
-          if (p.code===50) a.sa=parseFloat(p.value);
-          if (p.code===51) a.ea=parseFloat(p.value);
-        }
-        const verts=[];
-        let s0=a.sa, e0=a.ea; if(e0<=s0) e0+=360;
-        const steps=Math.max(8,Math.ceil((e0-s0)/5));
-        for (let i=0;i<=steps;i++) {
-          const ang=(s0+(e0-s0)*i/steps)*Math.PI/180;
-          verts.push({x:a.cx+a.r*Math.cos(ang), y:a.cy+a.r*Math.sin(ang)});
-        }
-        if (verts.length>=2) { entities.push({type:'LWPOLYLINE',layer:a.layer,vertices:verts,closed:false}); this._stat(layerStats,a.layer,'ARC'); }
+        const e = { type:'LWPOLYLINE', layer:'0', vertices:[], closed:false }; let cv=null;
+        for (const p of sub) { if(p.code===8)e.layer=p.value; if(p.code===70)e.closed=(parseInt(p.value)&1)===1; if(p.code===10){if(cv)e.vertices.push(cv);cv={x:parseFloat(p.value),y:0};} if(p.code===20&&cv)cv.y=parseFloat(p.value); }
+        if(cv)e.vertices.push(cv); if(e.vertices.length>=2){entities.push(e);this._s(layerStats,e.layer,'LWPOLYLINE');}
+      } else if (block.type==='POLYLINE') { pverts=[];player='0';pclosed=false; for(const p of sub){if(p.code===8)player=p.value;if(p.code===70)pclosed=(parseInt(p.value)&1)===1;}
+      } else if (block.type==='VERTEX') { if(pverts!==null){let vx=0,vy=0;for(const p of sub){if(p.code===10)vx=parseFloat(p.value);if(p.code===20)vy=parseFloat(p.value);}pverts.push({x:vx,y:vy});}
+      } else if (block.type==='SEQEND') { if(pverts&&pverts.length>=2){entities.push({type:'LWPOLYLINE',layer:player,vertices:pverts,closed:pclosed});this._s(layerStats,player,'POLYLINE');}pverts=null;
+      } else if (block.type==='ARC') {
+        const a={layer:'0',cx:0,cy:0,r:0,sa:0,ea:360};
+        for(const p of sub){if(p.code===8)a.layer=p.value;if(p.code===10)a.cx=parseFloat(p.value);if(p.code===20)a.cy=parseFloat(p.value);if(p.code===40)a.r=parseFloat(p.value);if(p.code===50)a.sa=parseFloat(p.value);if(p.code===51)a.ea=parseFloat(p.value);}
+        const verts=[];let s0=a.sa,e0=a.ea;if(e0<=s0)e0+=360;const steps=Math.max(8,Math.ceil((e0-s0)/5));
+        for(let i=0;i<=steps;i++){const ang=(s0+(e0-s0)*i/steps)*Math.PI/180;verts.push({x:a.cx+a.r*Math.cos(ang),y:a.cy+a.r*Math.sin(ang)});}
+        if(verts.length>=2){entities.push({type:'LWPOLYLINE',layer:a.layer,vertices:verts,closed:false});this._s(layerStats,a.layer,'ARC');}
       }
     }
     return { entities, layerStats, rawText: text };
   }
-  static _stat(s,l,t) { if(!s[l]) s[l]={}; s[l][t]=(s[l][t]||0)+1; }
+  static _s(s,l,t){if(!s[l])s[l]={};s[l][t]=(s[l][t]||0)+1;}
 }
 
 // ============================================================
-// DXF Writer
+// DXF Writer — ezdxf R12 template + custom ENTITIES
 // ============================================================
 class DxfWriter {
   static generate(segments) {
-    let o='  0\nSECTION\n  2\nHEADER\n  9\n$ACADVER\n  1\nAC1009\n  9\n$INSUNITS\n 70\n4\n  0\nENDSEC\n';
-    o+='  0\nSECTION\n  2\nTABLES\n  0\nTABLE\n  2\nLAYER\n 70\n1\n';
-    const layers=new Set(segments.map(s=>s.layer||'0'));
-    for (const l of layers) o+='  0\nLAYER\n  2\n'+l+'\n 70\n0\n 62\n7\n  6\nCONTINUOUS\n';
-    o+='  0\nENDTAB\n  0\nENDSEC\n  0\nSECTION\n  2\nENTITIES\n';
+    const template = atob(DXF_TEMPLATE_B64);
+    let entities = '  0\nSECTION\n  2\nENTITIES\n';
+    let handle = 0x30;
     for (const s of segments) {
-      o+='  0\nLINE\n  8\n'+(s.layer||'0')+'\n';
-      o+=' 10\n'+s.start.x.toFixed(1)+'\n 20\n'+s.start.y.toFixed(1)+'\n 30\n0.0\n';
-      o+=' 11\n'+s.end.x.toFixed(1)+'\n 21\n'+s.end.y.toFixed(1)+'\n 31\n0.0\n';
+      handle++;
+      const h = handle.toString(16).toUpperCase();
+      entities += `  0\nLINE\n  5\n${h}\n  8\n${s.layer||'LEICA_MEASURED_LINE'}\n`;
+      entities += ` 10\n${s.start.x}.0\n 20\n${s.start.y}.0\n 30\n0.0\n`;
+      entities += ` 11\n${s.end.x}.0\n 21\n${s.end.y}.0\n 31\n0.0\n`;
     }
-    o+='  0\nENDSEC\n  0\nEOF\n';
-    return o;
+    entities += '  0\nENDSEC\n  0\nEOF\n';
+    return template + entities;
   }
 }
 
 // ============================================================
-// Cleanup Engine
+// Node-Based Cleanup Engine
 // ============================================================
 class CleanupEngine {
-  constructor(c) { this.angleTol=c.angleTol||5; this.maxShift=c.maxShift||40; this.gapTol=c.gapTol||5; this.log=[]; }
+  constructor(cfg) { this.angleTol=cfg.angleTol||5; this.maxShift=cfg.maxShift||40; this.mergeTol=cfg.mergeTol||20; this.log=[]; }
   _log(t,m) { this.log.push({type:t,msg:m}); }
-  dist(a,b) { return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2); }
-  angLine(p1,p2) { return ((Math.atan2(p2.y-p1.y,p2.x-p1.x)*180/Math.PI)%360+360)%360; }
-  angBetween(s,a,b) { let d=Math.abs(this.angLine(s,a)-this.angLine(s,b))%360; return d>180?360-d:d; }
-  nearTgt(a) { let b=0,bd=999; for(const t of[0,90,180,270,360]){let d=Math.abs(a-t);if(d>180)d=360-d;if(d<bd){bd=d;b=t;}} return{target:b,diff:bd}; }
+  dist(a,b) { return Math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2); }
+  toInt(v) { return Math.floor(v); }
+  angleOf(p1,p2) { return ((Math.atan2(p2[1]-p1[1],p2[0]-p1[0])*180/Math.PI)%360+360)%360; }
+  angleBetween(s,a,b) { let d=Math.abs(this.angleOf(s,a)-this.angleOf(s,b))%360; return d>180?360-d:d; }
 
-  toSegments(ents,fl) {
-    const segs=[];
-    for (const e of ents) {
-      if (fl && !fl.has(e.layer)) continue;
-      if (e.type==='LINE') segs.push({start:{...e.start},end:{...e.end},layer:e.layer});
+  toSegments(entities, filterLayers) {
+    const segs = [];
+    for (const e of entities) {
+      if (filterLayers && !filterLayers.has(e.layer)) continue;
+      if (e.type==='LINE') segs.push({start:{x:e.start.x,y:e.start.y},end:{x:e.end.x,y:e.end.y},layer:e.layer});
       else if (e.type==='LWPOLYLINE') {
         const v=e.vertices;
-        for (let i=0;i<v.length-1;i++) segs.push({start:{...v[i]},end:{...v[i+1]},layer:e.layer});
-        if (e.closed&&v.length>2) segs.push({start:{...v[v.length-1]},end:{...v[0]},layer:e.layer});
+        for (let i=0;i<v.length-1;i++) segs.push({start:{x:v[i].x,y:v[i].y},end:{x:v[i+1].x,y:v[i+1].y},layer:e.layer});
+        if(e.closed&&v.length>2) segs.push({start:{x:v[v.length-1].x,y:v[v.length-1].y},end:{x:v[0].x,y:v[0].y},layer:e.layer});
       }
     }
     return segs;
   }
-  clone(s) { return s.map(x=>({start:{...x.start},end:{...x.end},layer:x.layer})); }
 
-  floorCoords(segs) {
-    let n=0;
-    for (const s of segs) {
-      if(s.start.x!==Math.floor(s.start.x)||s.start.y!==Math.floor(s.start.y)||s.end.x!==Math.floor(s.end.x)||s.end.y!==Math.floor(s.end.y)) n++;
-      s.start.x=Math.floor(s.start.x); s.start.y=Math.floor(s.start.y);
-      s.end.x=Math.floor(s.end.x); s.end.y=Math.floor(s.end.y);
+  run(entities, filterLayers) {
+    this.log = [];
+    this._log('info','선정리 시작 (노드 그래프 방식)...');
+
+    // 원본 세그먼트
+    const origSegs = this.toSegments(entities, filterLayers);
+    this._log('info',`대상 세그먼트: ${origSegs.length}개`);
+    if (!origSegs.length) { this._log('err','처리할 세그먼트 없음'); return { original:origSegs, cleaned:[], log:this.log }; }
+
+    // Step 1: 노드(공유점) 그래프 구축
+    const nodes = []; // [x, y]
+    const findNode = (px,py) => {
+      for (let i=0;i<nodes.length;i++) if(this.dist([px,py],nodes[i])<=this.mergeTol) return i;
+      nodes.push([px,py]); return nodes.length-1;
+    };
+    const edges = []; // {n1, n2, layer}
+    for (const s of origSegs) {
+      const n1 = findNode(s.start.x, s.start.y);
+      const n2 = findNode(s.end.x, s.end.y);
+      edges.push({n1, n2, layer: s.layer});
     }
-    this._log('ok',`소수점 내림: ${n}개 세그먼트`);
-  }
+    this._log('ok',`노드: ${nodes.length}개, 엣지: ${edges.length}개`);
 
-  buildGraph(segs) {
-    const pts=[];
-    const fa=(px,py)=>{for(let i=0;i<pts.length;i++)if(this.dist({x:px,y:py},pts[i])<=this.gapTol)return i;pts.push({x:px,y:py});return pts.length-1;};
-    const ld=segs.map((s,i)=>({seg:s,si:fa(s.start.x,s.start.y),ei:fa(s.end.x,s.end.y)}));
-    const pl={};for(let i=0;i<pts.length;i++)pl[i]=[];
-    ld.forEach((d,i)=>{pl[d.si].push({li:i,sd:'s'});pl[d.ei].push({li:i,sd:'e'});});
-    return{pts,ld,pl};
-  }
+    // Step 2: 노드 좌표 정수 내림
+    for (const n of nodes) { n[0]=this.toInt(n[0]); n[1]=this.toInt(n[1]); }
 
-  snapAngles(segs) {
-    const{pts,ld,pl}=this.buildGraph(segs);
-    let sc=0,sk=0;
-    for(const pi in pl){
-      const cn=pl[pi];if(cn.length<2)continue;
-      const sh=pts[pi];
-      for(let i=0;i<cn.length;i++)for(let j=i+1;j<cn.length;j++){
-        const a=cn[i],b=cn[j],da=ld[a.li],db=ld[b.li];
-        const eai=a.sd==='s'?da.ei:da.si, ebi=b.sd==='s'?db.ei:db.si;
-        const ea=pts[eai],eb=pts[ebi];
-        const ang=this.angBetween(sh,ea,eb);
-        const{target,diff}=this.nearTgt(ang);
-        if(diff<=this.angleTol&&diff>0.01){
-          const la=this.dist(sh,ea),lb=this.dist(sh,eb);
-          let me,fe,ms,ml,mi;
-          if(la<=lb){me=ea;fe=eb;ms=a.sd;ml=da;mi=eai;}else{me=eb;fe=ea;ms=b.sd;ml=db;mi=ebi;}
-          const af=this.angLine(sh,fe),am=this.angLine(sh,me),len=this.dist(sh,me);
-          const rd=((am-af)%360+360)%360;
-          const nad=rd<=180?af+target:af-target;
-          const r=nad*Math.PI/180;
-          const ne={x:sh.x+len*Math.cos(r),y:sh.y+len*Math.sin(r)};
-          if(this.dist(me,ne)<=this.maxShift){
-            const sg=ml.seg;
-            if(ms==='s'){sg.end.x=ne.x;sg.end.y=ne.y;}else{sg.start.x=ne.x;sg.start.y=ne.y;}
-            pts[mi]=ne;sc++;
-          } else sk++;
+    // Step 3: 엣지 방향 분류
+    const classify = (n1,n2) => {
+      const dx=Math.abs(n2[0]-n1[0]), dy=Math.abs(n2[1]-n1[1]);
+      if(dx<1&&dy<1) return 'zero';
+      const ang=Math.atan2(dy,dx)*180/Math.PI;
+      if(ang<=this.angleTol) return 'horizontal';
+      if(ang>=(90-this.angleTol)) return 'vertical';
+      return 'diagonal';
+    };
+    const dirs = edges.map(e => classify(nodes[e.n1], nodes[e.n2]));
+    let hCount=dirs.filter(d=>d==='horizontal').length;
+    let vCount=dirs.filter(d=>d==='vertical').length;
+    let dCount=dirs.filter(d=>d==='diagonal').length;
+    this._log('ok',`방향: 수평 ${hCount}, 수직 ${vCount}, 대각 ${dCount}`);
+
+    // Step 4: 수평선 y통일, 수직선 x통일 (반복 수렴)
+    for (let iter=0; iter<10; iter++) {
+      let changed = 0;
+      for (let i=0; i<edges.length; i++) {
+        const {n1,n2} = edges[i];
+        if (dirs[i]==='horizontal') {
+          const yv = Math.min(nodes[n1][1], nodes[n2][1]);
+          if(nodes[n1][1]!==yv||nodes[n2][1]!==yv) changed++;
+          nodes[n1][1]=yv; nodes[n2][1]=yv;
+        } else if (dirs[i]==='vertical') {
+          const xv = Math.min(nodes[n1][0], nodes[n2][0]);
+          if(nodes[n1][0]!==xv||nodes[n2][0]!==xv) changed++;
+          nodes[n1][0]=xv; nodes[n2][0]=xv;
         }
       }
+      if (changed===0) break;
     }
-    this._log('ok',`직각 스냅: ${sc}개 보정`);
-    if(sk)this._log('warn',`직각 스냅: ${sk}개 포기 (이동 ${this.maxShift}mm 초과)`);
-  }
+    this._log('ok','수직/수평 정렬 완료');
 
-  snapGaps(segs) {
-    const eps=[];
-    segs.forEach((s,i)=>{eps.push({x:s.start.x,y:s.start.y,si:i,sd:'s'});eps.push({x:s.end.x,y:s.end.y,si:i,sd:'e'});});
-    const used=new Set();let mg=0;
-    for(let i=0;i<eps.length;i++){
-      if(used.has(i))continue;const cl=[i];
-      for(let j=i+1;j<eps.length;j++){if(used.has(j))continue;if(this.dist(eps[i],eps[j])<=this.gapTol){cl.push(j);used.add(j);}}
-      if(cl.length>1){
-        const ax=Math.floor(cl.reduce((s,k)=>s+eps[k].x,0)/cl.length);
-        const ay=Math.floor(cl.reduce((s,k)=>s+eps[k].y,0)/cl.length);
-        for(const k of cl){const ep=eps[k],sg=segs[ep.si];if(ep.sd==='s'){sg.start.x=ax;sg.start.y=ay;}else{sg.end.x=ax;sg.end.y=ay;}}
-        mg+=cl.length-1;
-      }
+    // Step 5: 최종 세그먼트 생성 (정수 좌표)
+    const cleaned = edges.map((e,i) => ({
+      start: { x: Math.floor(nodes[e.n1][0]), y: Math.floor(nodes[e.n1][1]) },
+      end: { x: Math.floor(nodes[e.n2][0]), y: Math.floor(nodes[e.n2][1]) },
+      layer: e.layer
+    }));
+
+    // 연결 검증
+    let gaps = 0;
+    for (let i=0; i<cleaned.length; i++) {
+      const j = (i+1)%cleaned.length;
+      const g = Math.sqrt((cleaned[i].end.x-cleaned[j].start.x)**2+(cleaned[i].end.y-cleaned[j].start.y)**2);
+      if (g > 1) gaps++;
     }
-    this._log('ok',`갭 연결: ${mg}개 병합`);
-  }
+    if (gaps===0) this._log('ok','모든 선 완벽히 연결됨');
+    else this._log('warn',`${gaps}개 연결 안 됨 (별도 벽일 수 있음)`);
 
-  finalFloor(segs){for(const s of segs){s.start.x=Math.floor(s.start.x);s.start.y=Math.floor(s.start.y);s.end.x=Math.floor(s.end.x);s.end.y=Math.floor(s.end.y);}}
-
-  run(ents,fl) {
-    this.log=[];
-    this._log('info','선정리 시작...');
-    const orig=this.toSegments(ents,fl);
-    this._log('info',`대상 세그먼트: ${orig.length}개`);
-    if(!orig.length){this._log('err','처리할 세그먼트가 없습니다. 레이어 필터를 확인하세요.');return{original:orig,cleaned:[],log:this.log};}
-    const segs=this.clone(orig);
-    this.floorCoords(segs);
-    this.snapAngles(segs);
-    this.snapGaps(segs);
-    this.finalFloor(segs);
-    this._log('ok',`선정리 완료: ${segs.length}개 세그먼트`);
-    return{original:orig,cleaned:segs,log:this.log};
+    this._log('ok',`선정리 완료: ${cleaned.length}개`);
+    return { original: this.toSegments(entities, filterLayers), cleaned, log: this.log };
   }
 }
 
@@ -550,24 +307,8 @@ class CleanupEngine {
 // Renderer
 // ============================================================
 class DxfRenderer {
-  constructor(canvas){
-    this.canvas=canvas;this.ctx=canvas.getContext('2d');
-    this.zoom=1;this.panX=0;this.panY=0;this.isDrag=false;this.lm={x:0,y:0};
-    this.currentView='before';this.originalSegments=null;this.cleanedSegments=null;
-    this._ev();
-  }
-  _ev(){
-    const c=this.canvas;
-    c.addEventListener('mousedown',e=>{this.isDrag=true;this.lm={x:e.clientX,y:e.clientY};});
-    c.addEventListener('mousemove',e=>{if(!this.isDrag)return;this.panX+=e.clientX-this.lm.x;this.panY+=e.clientY-this.lm.y;this.lm={x:e.clientX,y:e.clientY};this.render();});
-    c.addEventListener('mouseup',()=>this.isDrag=false);
-    c.addEventListener('mouseleave',()=>this.isDrag=false);
-    c.addEventListener('wheel',e=>{e.preventDefault();const f=e.deltaY>0?0.9:1.1;const r=c.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;this.panX=mx-(mx-this.panX)*f;this.panY=my-(my-this.panY)*f;this.zoom*=f;this.render();},{passive:false});
-    let ld=0;
-    c.addEventListener('touchstart',e=>{if(e.touches.length===1){this.isDrag=true;this.lm={x:e.touches[0].clientX,y:e.touches[0].clientY};}else if(e.touches.length===2){this.isDrag=false;const dx=e.touches[1].clientX-e.touches[0].clientX,dy=e.touches[1].clientY-e.touches[0].clientY;ld=Math.sqrt(dx*dx+dy*dy);}},{passive:true});
-    c.addEventListener('touchmove',e=>{e.preventDefault();if(e.touches.length===1&&this.isDrag){this.panX+=e.touches[0].clientX-this.lm.x;this.panY+=e.touches[0].clientY-this.lm.y;this.lm={x:e.touches[0].clientX,y:e.touches[0].clientY};this.render();}else if(e.touches.length===2){const dx=e.touches[1].clientX-e.touches[0].clientX,dy=e.touches[1].clientY-e.touches[0].clientY;const d=Math.sqrt(dx*dx+dy*dy),f=d/ld;const cx=(e.touches[0].clientX+e.touches[1].clientX)/2,cy=(e.touches[0].clientY+e.touches[1].clientY)/2;const r=c.getBoundingClientRect(),mx=cx-r.left,my=cy-r.top;this.panX=mx-(mx-this.panX)*f;this.panY=my-(my-this.panY)*f;this.zoom*=f;ld=d;this.render();}},{passive:false});
-    c.addEventListener('touchend',()=>this.isDrag=false,{passive:true});
-  }
+  constructor(c){this.canvas=c;this.ctx=c.getContext('2d');this.zoom=1;this.panX=0;this.panY=0;this.isDrag=false;this.lm={x:0,y:0};this.currentView='before';this.originalSegments=null;this.cleanedSegments=null;this._ev();}
+  _ev(){const c=this.canvas;c.addEventListener('mousedown',e=>{this.isDrag=true;this.lm={x:e.clientX,y:e.clientY};});c.addEventListener('mousemove',e=>{if(!this.isDrag)return;this.panX+=e.clientX-this.lm.x;this.panY+=e.clientY-this.lm.y;this.lm={x:e.clientX,y:e.clientY};this.render();});c.addEventListener('mouseup',()=>this.isDrag=false);c.addEventListener('mouseleave',()=>this.isDrag=false);c.addEventListener('wheel',e=>{e.preventDefault();const f=e.deltaY>0?0.9:1.1;const r=c.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;this.panX=mx-(mx-this.panX)*f;this.panY=my-(my-this.panY)*f;this.zoom*=f;this.render();},{passive:false});let ld=0;c.addEventListener('touchstart',e=>{if(e.touches.length===1){this.isDrag=true;this.lm={x:e.touches[0].clientX,y:e.touches[0].clientY};}else if(e.touches.length===2){this.isDrag=false;const dx=e.touches[1].clientX-e.touches[0].clientX,dy=e.touches[1].clientY-e.touches[0].clientY;ld=Math.sqrt(dx*dx+dy*dy);}},{passive:true});c.addEventListener('touchmove',e=>{e.preventDefault();if(e.touches.length===1&&this.isDrag){this.panX+=e.touches[0].clientX-this.lm.x;this.panY+=e.touches[0].clientY-this.lm.y;this.lm={x:e.touches[0].clientX,y:e.touches[0].clientY};this.render();}else if(e.touches.length===2){const dx=e.touches[1].clientX-e.touches[0].clientX,dy=e.touches[1].clientY-e.touches[0].clientY;const d=Math.sqrt(dx*dx+dy*dy),f=d/ld;const cx=(e.touches[0].clientX+e.touches[1].clientX)/2,cy=(e.touches[0].clientY+e.touches[1].clientY)/2;const r=c.getBoundingClientRect(),mx=cx-r.left,my=cy-r.top;this.panX=mx-(mx-this.panX)*f;this.panY=my-(my-this.panY)*f;this.zoom*=f;ld=d;this.render();}},{passive:false});c.addEventListener('touchend',()=>this.isDrag=false,{passive:true});}
   resize(){const r=this.canvas.parentElement.getBoundingClientRect();const d=window.devicePixelRatio||1;this.canvas.width=r.width*d;this.canvas.height=r.height*d;this.canvas.style.width=r.width+'px';this.canvas.style.height=r.height+'px';this.ctx.setTransform(d,0,0,d,0,0);this.w=r.width;this.h=r.height;}
   fitView(segs){if(!segs||!segs.length)return;let a=Infinity,b=Infinity,c=-Infinity,d=-Infinity;for(const s of segs){a=Math.min(a,s.start.x,s.end.x);b=Math.min(b,s.start.y,s.end.y);c=Math.max(c,s.start.x,s.end.x);d=Math.max(d,s.start.y,s.end.y);}const bw=c-a||1,bh=d-b||1,p=80;this.zoom=Math.min((this.w-p*2)/bw,(this.h-p*2)/bh);this.panX=this.w/2-(a+bw/2)*this.zoom;this.panY=this.h/2+(b+bh/2)*this.zoom;}
   _ts(x,y){return{x:x*this.zoom+this.panX,y:-y*this.zoom+this.panY};}
@@ -582,169 +323,77 @@ class DxfRenderer {
 // ============================================================
 const app = {
   dxfData:null, result:null, renderer:null, fileName:'', selectedLayers:new Set(),
-
   init(){
     this.renderer=new DxfRenderer(document.getElementById('canvas'));
     this.renderer.resize();this.renderer.clear();
-    this._setupDZ();this._setupBtns();this._setupTabs();
-    window.addEventListener('resize',()=>{this.renderer.resize();this.renderer.render();});
-  },
-
-  _setupDZ(){
     const dz=document.getElementById('dropzone'),inp=document.getElementById('fileInput');
     dz.addEventListener('click',()=>inp.click());
     dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
     dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
     dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)this.loadFile(e.dataTransfer.files[0]);});
     inp.addEventListener('change',e=>{if(e.target.files.length)this.loadFile(e.target.files[0]);});
-  },
-
-  _setupBtns(){
     document.getElementById('btnRun').addEventListener('click',()=>this.runCleanup());
     document.getElementById('btnDownload').addEventListener('click',()=>this.download());
     document.getElementById('zoomIn').addEventListener('click',()=>{this.renderer.zoom*=1.3;this.renderer.render();});
     document.getElementById('zoomOut').addEventListener('click',()=>{this.renderer.zoom*=0.7;this.renderer.render();});
     document.getElementById('zoomFit').addEventListener('click',()=>{const s=this.renderer.cleanedSegments||this.renderer.originalSegments;if(s){this.renderer.fitView(s);this.renderer.render();}});
+    document.querySelectorAll('.preview-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.preview-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');this.renderer.currentView=tab.dataset.view;this.renderer.render();});});
+    window.addEventListener('resize',()=>{this.renderer.resize();this.renderer.render();});
   },
-
-  _setupTabs(){
-    document.querySelectorAll('.preview-tab').forEach(tab=>{
-      tab.addEventListener('click',()=>{
-        document.querySelectorAll('.preview-tab').forEach(t=>t.classList.remove('active'));
-        tab.classList.add('active');
-        this.renderer.currentView=tab.dataset.view;
-        this.renderer.render();
-      });
-    });
-  },
-
   loadFile(file){
     if(!file.name.toLowerCase().endsWith('.dxf')){alert('DXF 파일만 지원합니다.');return;}
-    // Try UTF-8 first, fallback to EUC-KR
-    const r1=new FileReader();
-    r1.onload=e=>{
-      const txt=e.target.result;
-      if(!txt.includes('SECTION')){
-        const r2=new FileReader();
-        r2.onload=e2=>this._process(e2.target.result,file);
-        r2.readAsText(file,'euc-kr');
-      } else this._process(txt,file);
-    };
-    r1.readAsText(file,'utf-8');
+    const r=new FileReader();
+    r.onload=e=>{const txt=e.target.result;if(!txt.includes('SECTION')){const r2=new FileReader();r2.onload=e2=>this._process(e2.target.result,file);r2.readAsText(file,'euc-kr');}else this._process(txt,file);};
+    r.readAsText(file,'utf-8');
   },
-
   _process(text,file){
-    this.dxfData=DxfParser.parse(text);
-    this.fileName=file.name;
-
+    this.dxfData=DxfParser.parse(text);this.fileName=file.name;
     document.getElementById('dropzone').classList.add('file-loaded');
     document.getElementById('dropzone-title').textContent=file.name;
     document.getElementById('dropzone-sub').textContent=`${(file.size/1024).toFixed(1)} KB · ${this.dxfData.entities.length} 엔티티`;
-    document.getElementById('btnRun').disabled=false;
-    document.getElementById('btnDownload').style.display='none';
-
-    this._buildLayers();
-    this._updatePreview();
-
-    this.clearLog();
-    this.addLog('info',`파일 로드: ${file.name}`);
-    this.addLog('info',`전체 엔티티: ${this.dxfData.entities.length}개`);
-    const ls=this.dxfData.layerStats;
-    for(const l in ls){
-      const types=Object.entries(ls[l]).map(([t,c])=>`${t}:${c}`).join(', ');
-      this.addLog('dim',`  레이어 "${l}" → ${types}`);
-    }
-    if(!this.dxfData.entities.length){
-      this.addLog('err','엔티티를 찾지 못했습니다.');
-      this.addLog('warn','DXF 파일 구조를 확인해주세요.');
-    }
+    document.getElementById('btnRun').disabled=false;document.getElementById('btnDownload').style.display='none';
+    this._buildLayers();this._updatePreview();
+    this.clearLog();this.addLog('info',`파일: ${file.name}`);this.addLog('info',`엔티티: ${this.dxfData.entities.length}개`);
+    const ls=this.dxfData.layerStats;for(const l in ls){const t=Object.entries(ls[l]).map(([t,c])=>`${t}:${c}`).join(', ');this.addLog('dim',`  "${l}" → ${t}`);}
   },
-
   _buildLayers(){
-    const ls=this.dxfData.layerStats;
-    const layers=Object.keys(ls).sort();
-    const cont=document.getElementById('layerList');
-    cont.innerHTML='';
-    this.selectedLayers=new Set();
-    const hasLeica=layers.includes('LEICA_MEASURED_LINE');
-
-    for(const layer of layers){
-      const total=Object.values(ls[layer]).reduce((a,b)=>a+b,0);
-      const isT=layer==='LEICA_MEASURED_LINE';
-      const chk=hasLeica?isT:true;
-      if(chk)this.selectedLayers.add(layer);
-      const div=document.createElement('div');
-      div.className='layer-item'+(isT?' target':'');
-      div.innerHTML=`<input type="checkbox" ${chk?'checked':''} data-layer="${layer}"><span>${layer}</span><span class="count">${total}</span>`;
-      div.querySelector('input').addEventListener('change',e=>{
-        if(e.target.checked)this.selectedLayers.add(layer);else this.selectedLayers.delete(layer);
-        this._updatePreview();
-      });
-      cont.appendChild(div);
-    }
-    document.getElementById('layerGroup').style.display=layers.length?'':'none';
-    if(hasLeica)this.addLog('ok','LEICA_MEASURED_LINE 레이어 자동 선택');
+    const ls=this.dxfData.layerStats,layers=Object.keys(ls).sort(),cont=document.getElementById('layerList');
+    cont.innerHTML='';this.selectedLayers=new Set();
+    const hasL=layers.includes('LEICA_MEASURED_LINE');
+    for(const layer of layers){const total=Object.values(ls[layer]).reduce((a,b)=>a+b,0);const isT=layer==='LEICA_MEASURED_LINE';const chk=hasL?isT:true;if(chk)this.selectedLayers.add(layer);
+      const div=document.createElement('div');div.className='layer-item'+(isT?' target':'');div.innerHTML=`<input type="checkbox" ${chk?'checked':''} data-layer="${layer}"><span>${layer}</span><span class="count">${total}</span>`;
+      div.querySelector('input').addEventListener('change',e=>{if(e.target.checked)this.selectedLayers.add(layer);else this.selectedLayers.delete(layer);this._updatePreview();});cont.appendChild(div);}
+    document.getElementById('layerGroup').style.display=layers.length?'':'none';if(hasL)this.addLog('ok','LEICA_MEASURED_LINE 자동 선택');
   },
-
   _updatePreview(){
-    if(!this.dxfData)return;
-    const eng=new CleanupEngine({gapTol:5});
+    if(!this.dxfData)return;const eng=new CleanupEngine({mergeTol:20});
     const segs=eng.toSegments(this.dxfData.entities,this.selectedLayers);
-    this.renderer.originalSegments=segs;
-    this.renderer.cleanedSegments=null;
-    this.renderer.currentView='before';
-    document.querySelectorAll('.preview-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelector('[data-view="before"]').classList.add('active');
-    this.renderer.fitView(segs);
-    this.renderer.render();
-    document.getElementById('previewEmpty').style.display=segs.length?'none':'';
-    document.getElementById('previewStats').textContent=segs.length?`${segs.length} segments`:'';
+    this.renderer.originalSegments=segs;this.renderer.cleanedSegments=null;this.renderer.currentView='before';
+    document.querySelectorAll('.preview-tab').forEach(t=>t.classList.remove('active'));document.querySelector('[data-view="before"]').classList.add('active');
+    this.renderer.fitView(segs);this.renderer.render();document.getElementById('previewEmpty').style.display=segs.length?'none':'';document.getElementById('previewStats').textContent=segs.length?`${segs.length} segments`:'';
   },
-
   runCleanup(){
     if(!this.dxfData)return;
-    const cfg={
-      angleTol:parseFloat(document.getElementById('angleTol').value)||5,
-      maxShift:parseFloat(document.getElementById('maxShift').value)||40,
-      gapTol:parseFloat(document.getElementById('gapTol').value)||5,
-    };
-    this.clearLog();
-    this.addLog('info',`설정: 각도=${cfg.angleTol}°, 최대이동=${cfg.maxShift}mm, 갭=${cfg.gapTol}mm`);
-    this.addLog('info',`대상 레이어: ${[...this.selectedLayers].join(', ')}`);
-    const eng=new CleanupEngine(cfg);
-    this.result=eng.run(this.dxfData.entities,this.selectedLayers);
+    const cfg={angleTol:parseFloat(document.getElementById('angleTol').value)||5,maxShift:parseFloat(document.getElementById('maxShift').value)||40,mergeTol:parseFloat(document.getElementById('mergeTol').value)||20};
+    this.clearLog();this.addLog('info',`설정: 각도=${cfg.angleTol}°, 이동=${cfg.maxShift}mm, 병합=${cfg.mergeTol}mm`);this.addLog('info',`레이어: ${[...this.selectedLayers].join(', ')}`);
+    const eng=new CleanupEngine(cfg);this.result=eng.run(this.dxfData.entities,this.selectedLayers);
     for(const e of this.result.log)this.addLog(e.type,e.msg);
-    this.renderer.originalSegments=this.result.original;
-    this.renderer.cleanedSegments=this.result.cleaned;
-    this.renderer.currentView='overlay';
-    document.querySelectorAll('.preview-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelector('[data-view="overlay"]').classList.add('active');
-    this.renderer.fitView(this.result.cleaned.length?this.result.cleaned:this.result.original);
-    this.renderer.render();
+    this.renderer.originalSegments=this.result.original;this.renderer.cleanedSegments=this.result.cleaned;this.renderer.currentView='overlay';
+    document.querySelectorAll('.preview-tab').forEach(t=>t.classList.remove('active'));document.querySelector('[data-view="overlay"]').classList.add('active');
+    this.renderer.fitView(this.result.cleaned.length?this.result.cleaned:this.result.original);this.renderer.render();
     document.getElementById('previewStats').textContent=`원본 ${this.result.original.length} → 정리 ${this.result.cleaned.length}`;
     document.getElementById('btnDownload').style.display=this.result.cleaned.length?'flex':'none';
   },
-
   download(){
     if(!this.result)return;
     const dxf=DxfWriter.generate(this.result.cleaned);
-    const blob=new Blob([dxf],{type:'application/dxf'});
-    const a=document.createElement('a');
-    a.download=this.fileName.replace(/\.dxf$/i,'')+'_정리.dxf';
-    a.href=URL.createObjectURL(blob);
-    a.click();URL.revokeObjectURL(a.href);
+    const blob=new Blob([dxf],{type:'application/dxf'});const a=document.createElement('a');
+    a.download=this.fileName.replace(/\.dxf$/i,'')+'_정리.dxf';a.href=URL.createObjectURL(blob);a.click();URL.revokeObjectURL(a.href);
     this.addLog('ok',`다운로드: ${a.download}`);
   },
-
   clearLog(){document.getElementById('logBody').innerHTML='';},
-  addLog(type,msg){
-    const div=document.createElement('div');
-    div.className=`log-line log-${type}`;
-    div.textContent=`${{ok:'✅',warn:'⚠️',err:'❌',info:'ℹ️',dim:'  ·'}[type]||'·'} ${msg}`;
-    const b=document.getElementById('logBody');b.appendChild(div);b.scrollTop=b.scrollHeight;
-  }
+  addLog(type,msg){const div=document.createElement('div');div.className=`log-line log-${type}`;div.textContent=`${{ok:'✅',warn:'⚠️',err:'❌',info:'ℹ️',dim:'  ·'}[type]||'·'} ${msg}`;const b=document.getElementById('logBody');b.appendChild(div);b.scrollTop=b.scrollHeight;}
 };
-
 document.addEventListener('DOMContentLoaded',()=>app.init());
 </script>
 </body>
