@@ -181,7 +181,7 @@ class DxfParser {
 // ============================================================
 class DxfWriter {
   static generate(segments) {
-    const template = atob(DXF_TEMPLATE_B64);
+    let template = atob(DXF_TEMPLATE_B64);
     let entities = '  0\nSECTION\n  2\nENTITIES\n';
     let handle = 0x30;
     for (const s of segments) {
@@ -192,6 +192,9 @@ class DxfWriter {
       entities += ` 11\n${s.end.x}.0\n 21\n${s.end.y}.0\n 31\n0.0\n`;
     }
     entities += '  0\nENDSEC\n  0\nEOF\n';
+    // Update HANDSEED to be higher than max handle used
+    const newSeed = (handle + 10).toString(16).toUpperCase();
+    template = template.replace('$HANDSEED\n  5\n30', '$HANDSEED\n  5\n' + newSeed);
     return template + entities;
   }
 }
