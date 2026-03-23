@@ -66,9 +66,57 @@ canvas{width:100%;height:100%;display:block}
 .zoom-controls{position:absolute;bottom:16px;right:16px;display:flex;gap:4px;z-index:10}
 .zoom-btn{width:36px;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .zoom-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* PIN Lock Screen */
+@keyframes pinShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pinFadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes pinUnlock{to{opacity:0;transform:scale(1.05)}}
+.lock-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:32px;animation:pinFadeIn .3s ease}
+.lock-screen.unlocking{animation:pinUnlock .3s ease forwards}
+.lock-icon{width:64px;height:64px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--bg);font-family:var(--mono)}
+.lock-title{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.lock-sub{font-size:13px;color:var(--text-dim);margin-top:-20px}
+.pin-dots{display:flex;gap:16px;margin:8px 0}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent)}
+.pin-dot.error{border-color:var(--danger);background:var(--danger)}
+.keypad{display:grid;grid-template-columns:repeat(3,72px);gap:10px}
+.key-btn{width:72px;height:56px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-size:22px;font-weight:600;font-family:var(--mono);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;user-select:none;-webkit-tap-highlight-color:transparent}
+.key-btn:active{background:var(--accent);color:var(--bg);transform:scale(.93)}
+.key-btn.empty{border-color:transparent;background:transparent;cursor:default}
+.key-btn.back{font-size:18px;color:var(--text-dim)}
 </style>
 </head>
 <body>
+<!-- PIN Lock Screen -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-icon">⊿</div>
+  <div class="lock-title">!G 실측 세탁기</div>
+  <div class="lock-sub">PIN을 입력하세요</div>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot" id="dot0"></div>
+    <div class="pin-dot" id="dot1"></div>
+    <div class="pin-dot" id="dot2"></div>
+    <div class="pin-dot" id="dot3"></div>
+  </div>
+  <div class="keypad" id="keypad">
+    <button class="key-btn" data-key="1">1</button>
+    <button class="key-btn" data-key="2">2</button>
+    <button class="key-btn" data-key="3">3</button>
+    <button class="key-btn" data-key="4">4</button>
+    <button class="key-btn" data-key="5">5</button>
+    <button class="key-btn" data-key="6">6</button>
+    <button class="key-btn" data-key="7">7</button>
+    <button class="key-btn" data-key="8">8</button>
+    <button class="key-btn" data-key="9">9</button>
+    <button class="key-btn empty"></button>
+    <button class="key-btn" data-key="0">0</button>
+    <button class="key-btn back" data-key="back">⌫</button>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" style="display:none">
 <div class="header">
   <div class="header-icon">⊿</div>
   <div><h1>!G 실측 세탁기</h1><p>DISTO X6 → Auto Cleanup → Clean DXF</p></div>
@@ -119,6 +167,7 @@ canvas{width:100%;height:100%;display:block}
     </div>
   </div>
 </div>
+</div><!-- /mainApp -->
 
 <script>
 // ezdxf R12 DXF template (base64) — LEICA_MEASURED_LINE layer included
@@ -397,7 +446,86 @@ const app = {
   clearLog(){document.getElementById('logBody').innerHTML='';},
   addLog(type,msg){const div=document.createElement('div');div.className=`log-line log-${type}`;div.textContent=`${{ok:'✅',warn:'⚠️',err:'❌',info:'ℹ️',dim:'  ·'}[type]||'·'} ${msg}`;const b=document.getElementById('logBody');b.appendChild(div);b.scrollTop=b.scrollHeight;}
 };
-document.addEventListener('DOMContentLoaded',()=>app.init());
+// ============================================================
+// PIN Lock
+// ============================================================
+const APP_PIN = '0707';
+const STORAGE_KEY = 'ig_cleanup_unlocked';
+let isUnlocked = localStorage.getItem(STORAGE_KEY) === '1';
+
+function initPinLock() {
+  if (isUnlocked) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = '';
+    app.init();
+    return;
+  }
+
+  let entered = '';
+  const dots = [0,1,2,3].map(i => document.getElementById('dot'+i));
+  const dotsDiv = document.getElementById('pinDots');
+
+  function updateDots() {
+    dots.forEach((d,i) => {
+      d.classList.toggle('filled', i < entered.length);
+      d.classList.remove('error');
+    });
+  }
+
+  function onKey(key) {
+    if (key === 'back') {
+      entered = entered.slice(0,-1);
+      updateDots();
+      return;
+    }
+    if (entered.length >= 4) return;
+    entered += key;
+    updateDots();
+
+    if (entered.length === 4) {
+      if (entered === APP_PIN) {
+        // 성공
+        dots.forEach(d => d.style.borderColor = 'var(--success)');
+        dots.forEach(d => d.style.background = 'var(--success)');
+        isUnlocked = true;
+        localStorage.setItem(STORAGE_KEY, '1');
+        setTimeout(() => {
+          const lock = document.getElementById('lockScreen');
+          lock.classList.add('unlocking');
+          setTimeout(() => {
+            lock.style.display = 'none';
+            document.getElementById('mainApp').style.display = '';
+            app.init();
+          }, 300);
+        }, 200);
+      } else {
+        // 실패
+        dots.forEach(d => d.classList.add('error'));
+        dotsDiv.style.animation = 'pinShake .4s ease';
+        setTimeout(() => {
+          entered = '';
+          updateDots();
+          dotsDiv.style.animation = '';
+        }, 500);
+      }
+    }
+  }
+
+  document.getElementById('keypad').addEventListener('click', e => {
+    const btn = e.target.closest('.key-btn');
+    if (!btn || btn.classList.contains('empty')) return;
+    onKey(btn.dataset.key);
+  });
+
+  // 키보드 지원
+  document.addEventListener('keydown', e => {
+    if (isUnlocked) return;
+    if (e.key >= '0' && e.key <= '9') onKey(e.key);
+    if (e.key === 'Backspace') onKey('back');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => initPinLock());
 </script>
 </body>
 </html>
